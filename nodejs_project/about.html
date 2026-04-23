@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於 - 桌面字幕</title>
+    <style>
+        :root {
+            --bg: #060a13;
+            --panel: rgba(10, 18, 33, 0.92);
+            --cyan: #57f7ff;
+            --yellow: #ffe761;
+            --text: #eef7ff;
+            --muted: #8ba4be;
+            --border: rgba(87, 247, 255, 0.28);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(87, 247, 255, 0.14), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(255, 231, 97, 0.12), transparent 30%),
+                linear-gradient(180deg, #050810 0%, #0d1425 100%);
+            padding: 24px;
+        }
+
+        .shell {
+            position: relative;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 26px;
+            background: linear-gradient(180deg, rgba(13, 23, 41, 0.96), rgba(8, 14, 26, 0.94));
+            border: 1px solid var(--border);
+            box-shadow: 0 0 36px rgba(87, 247, 255, 0.14);
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+        }
+
+        .shell::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+            clip-path: inherit;
+        }
+
+        .eyebrow {
+            color: var(--yellow);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            width: 76px;
+            height: 76px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, rgba(255, 231, 97, 0.96), rgba(87, 247, 255, 0.9));
+            color: #07101c;
+            font-size: 28px;
+            font-weight: 900;
+            box-shadow: 0 0 24px rgba(255, 231, 97, 0.24);
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+            letter-spacing: 0.06em;
+        }
+
+        .version {
+            display: inline-block;
+            padding: 6px 12px;
+            border: 1px solid rgba(87, 247, 255, 0.26);
+            color: var(--cyan);
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            background: rgba(10, 24, 42, 0.85);
+        }
+
+        .description {
+            margin: 22px 0 0;
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .grid {
+            margin-top: 24px;
+            display: grid;
+            gap: 14px;
+        }
+
+        .card {
+            padding: 16px;
+            background: rgba(8, 15, 28, 0.88);
+            border: 1px solid rgba(87, 247, 255, 0.18);
+        }
+
+        .card-title {
+            color: var(--yellow);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .status[data-state="error"] {
+            color: var(--red);
+        }
+
+        /* 關閉按鈕樣式 */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            filter: drop-shadow(0 0 5px rgba(255, 95, 136, 0.4));
+        }
+
+        .close-btn:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 8px rgba(255, 95, 136, 0.8));
+        }
+
+        .footnote {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* 移動模式樣式 */
+        .drag-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 228, 92, 0.9), rgba(87, 247, 255, 0.85));
+            color: #07101c;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            z-index: 2000;
+            -webkit-app-region: drag;
+            text-align: center;
+        }
+
+        body.alt-pressed .drag-overlay {
+            display: flex;
+        }
+
+        body.alt-pressed .close-btn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="dragOverlay" class="drag-overlay">
+        <div style="font-size: 24px; margin-bottom: 10px;">移動模式 (MOVE MODE)</div>
+        <div style="font-size: 14px;">按住 Alt 鍵並拖曳此視窗</div>
+    </div>
+    <div class="shell">
+        <!-- 關閉按鈕 SVG -->
+        <div id="closeBtn" class="close-btn" title="關閉視窗">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" fill="#ff5f88" fill-opacity="0.2"/>
+                <path d="M15 9L9 15M9 9L15 15" stroke="#ff5f88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="eyebrow">Night City Subtitle HUD</div>
+
+        <div class="header">
+            <div class="logo">CC</div>
+            <div>
+                <h1>桌面字幕</h1>
+                <div id="appVersion" class="version">V0.0.1</div>
+            </div>
+        </div>
+
+        <p class="description">
+            一個常駐桌面的即時字幕 HUD，專注把語音辨識結果穩定地投射到你的會議、簡報與錄影流程上。
+            這一版主打更可靠的啟動流程、即時狀態提示，以及更有夜城感的操作面板。
+        </p>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">Quick Controls</div>
+                <div class="item">
+                    <span>切換語音辨識</span>
+                    <span class="key">Shift + F2</span>
+                </div>
+                <div class="item">
+                    <span>拖曳字幕位置</span>
+                    <span class="key">Hold Alt</span>
+                </div>
+                <div class="item">
+                    <span>系統匣控制</span>
+                    <span class="key">Tray Menu</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Current Capabilities</div>
+                <div class="item">
+                    <span>即時語音辨識</span>
+                    <span class="key">zh-TW</span>
+                </div>
+                <div class="item">
+                    <span>HUD 狀態提示</span>
+                    <span class="key">Live</span>
+                </div>
+                <div class="item">
+                    <span>字體與背景自訂</span>
+                    <span class="key">Config</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Runtime & Author</div>
+                <div class="item">
+                    <span>Author</span>
+                    <span class="key"><a href="https://3wa.tw" target="_blank" style="color: var(--cyan); text-decoration: none;">羽山秋人</a></span>
+                </div>
+                <div class="item">
+                    <span>Website</span>
+                    <span class="key"><a href="https://3wa.tw" target="_blank" style="color: var(--muted); text-decoration: underline;">3wa.tw</a></span>
+                </div>
+                <div class="item">
+                    <span>App Version</span>
+                    <span id="appVersionValue" class="key">V0.0.1</span>
+                </div>
+                <div class="item">
+                    <span>Electron</span>
+                    <span id="electronVersion" class="key">-</span>
+                </div>
+                <div class="item">
+                    <span>Chrome</span>
+                    <span id="chromeVersion" class="key">-</span>
+                </div>
+                <div class="item">
+                    <span>Node.js</span>
+                    <span id="nodeVersion" class="key">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footnote">
+            若 `Shift + F2` 已切換到啟動中但沒有進入聽取，請優先檢查 Windows 麥克風權限與目前網路連線狀態。
+        </div>
+    </div>
+
+    <script src="about.js"></script>
+</body>
+</html>

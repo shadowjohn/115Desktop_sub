@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "speech-helper", "speech-helper", "{6B6662A0-E2D0-0FAD-218A-BA1E2EDF6A6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopSubSpeechHelper", "speech-helper\DesktopSubSpeechHelper.csproj", "{006F485B-5464-C16E-79B5-A3B21C4AC48F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{006F485B-5464-C16E-79B5-A3B21C4AC48F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{006F485B-5464-C16E-79B5-A3B21C4AC48F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{006F485B-5464-C16E-79B5-A3B21C4AC48F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{006F485B-5464-C16E-79B5-A3B21C4AC48F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{006F485B-5464-C16E-79B5-A3B21C4AC48F} = {6B6662A0-E2D0-0FAD-218A-BA1E2EDF6A6A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {948D8430-7B3B-4126-B9F7-AA5DEB9EDCE1}
+	EndGlobalSection
+EndGlobal

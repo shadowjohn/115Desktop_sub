@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Input - 桌面字幕系統</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #060911;
+            color: #57f7ff;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            border: 1px solid rgba(87, 247, 255, 0.3);
+            background: rgba(10, 18, 34, 0.8);
+            box-shadow: 0 0 30px rgba(87, 247, 255, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+        #status {
+            font-size: 14px;
+            color: #ffe761;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        #transcript {
+            font-size: 18px;
+            color: #fff;
+            max-width: 600px;
+            min-height: 60px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        button {
+            background: linear-gradient(135deg, #ffe761, #57f7ff);
+            border: none;
+            padding: 15px 40px;
+            color: #060911;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(87, 247, 255, 0.4);
+        }
+        button.active {
+            background: #ff5f88;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VOICE RECOGNITION</h1>
+        <div id="status">等待啟動...</div>
+        <div id="transcript">辨識結果將顯示在此並傳送到字幕視窗</div>
+        <button id="startBtn">點擊開始語音辨識</button>
+    </div>
+
+    <script>
+        const statusEl = document.getElementById('status');
+        const transcriptEl = document.getElementById('transcript');
+        const startBtn = document.getElementById('startBtn');
+
+        // 從 URL 參數獲取 Port
+        const urlParams = new URLSearchParams(window.location.search);
+        const activePort = urlParams.get('port') || '5999';
+
+        let recognition = null;
+        let isActive = false;
+        let keepAlive = false;
+
+        if (!('webkitSpeechRecognition' in window)) {
+            statusEl.innerText = '錯誤：您的瀏覽器不支援 Web Speech API';
+            startBtn.disabled = true;
+        } else {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'zh-TW';
+
+            recognition.onstart = () => {
+                isActive = true;
+                statusEl.innerText = '正在監聽語音... (Port: ' + activePort + ')';
+                startBtn.innerText = '停止辨識';
+                startBtn.classList.add('active');
+            };
+
+            recognition.onresult = (event) => {
+                let resultsArr = [];
+                
+                // 抓取最後 2 段辨識結果並處理標點
+                const startIndex = Math.max(0, event.results.length - 2);
+                for (let i = startIndex; i < event.results.length; ++i) {
+                    let text = event.results[i][0].transcript.trim();
+                    
+                    // 簡單的問句判斷邏輯
+                    const isQuestion = /[嗎呢吧？\?]$/.test(text) || /^(為什麼|如何|怎麼|什麼|誰|哪)/.test(text);
+                    
+                    if (isQuestion && !/[？\?]$/.test(text)) {
+                        text += '？';
+                    }
+                    
+                    resultsArr.push(text);
+                }
+
+                // 用標點連接
+                let resultText = '';
+                for (let i = 0; i < resultsArr.length; i++) {
+                    resultText += resultsArr[i];
+                    // 如果不是最後一個，且當前這句不是問句（已有問號），則補上逗號
+                    if (i < resultsArr.length - 1 && !resultsArr[i].endsWith('？')) {
+                        resultText += '，';
+                    }
+                }
+                transcriptEl.innerText = resultText;
+
+                if (resultText) {
+                    sendToSubtitle(resultText);
+                }
+
+                // 3 秒沒人說話，清空瀏覽器畫面上的文字並重啟辨識器（確保清空緩存，不留殘字）
+                if (window.voiceClearTimer) clearTimeout(window.voiceClearTimer);
+                window.voiceClearTimer = setTimeout(() => {
+                    transcriptEl.innerText = '';
+                    if (isActive) recognition.stop(); 
+                }, 3000);
+
+                // 如果辨識結果累積太多(超過 20 段)，自動重啟辨識器以清空緩存，保持效能
+                if (event.results.length > 20) {
+                    recognition.stop();
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                statusEl.innerText = '辨識錯誤：' + event.error;
+            };
+
+            recognition.onend = () => {
+                isActive = false;
+                statusEl.innerText = '語音辨識已結束';
+                startBtn.innerText = '開始語音辨識';
+                startBtn.classList.remove('active');
+                
+                if (keepAlive) {
+                    recognition.start();
+                }
+            };
+        }
+
+        async function sendToSubtitle(text) {
+            try {
+                await fetch(`http://127.0.0.1:${activePort}/subtitle`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+            } catch (err) {
+                console.error('Failed to send subtitle:', err);
+            }
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (isActive) {
+                keepAlive = false;
+                recognition.stop();
+            } else {
+                keepAlive = true;
+                recognition.start();
+            }
+        });
+    </script>
+</body>
+</html>

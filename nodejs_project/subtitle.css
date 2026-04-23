@@ -1,0 +1,178 @@
+:root {
+    --hud-cyan: #53f9ff;
+    --hud-yellow: #ffe45c;
+    --hud-red: #ff5b8f;
+    --hud-panel: rgba(7, 15, 31, 0.52);
+    --hud-panel-strong: rgba(10, 19, 38, 0.72);
+    --hud-text: #edf7ff;
+    --hud-subtle: #90a9c0;
+    --hud-shadow: 0 16px 40px rgba(2, 9, 22, 0.28);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+    user-select: none;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#subtitle-container {
+    position: relative;
+    width: min(92vw, 980px);
+    margin-top: 12px;
+    padding: 10px 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+}
+
+#status-panel,
+#text-panel {
+    position: relative;
+    width: 100%;
+    background:
+        linear-gradient(135deg, rgba(83, 249, 255, 0.1), rgba(255, 228, 92, 0.04)),
+        var(--hud-panel);
+    box-shadow: var(--hud-shadow);
+    backdrop-filter: blur(22px) saturate(145%);
+    -webkit-backdrop-filter: blur(22px) saturate(145%);
+    border-radius: 22px;
+}
+
+#status-panel {
+    max-width: 420px;
+    padding: 10px 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--hud-text);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+#status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--hud-cyan);
+    box-shadow: 0 0 12px currentColor;
+}
+
+#status-panel.status-idle #status-dot,
+#status-panel.status-stopped #status-dot {
+    color: var(--hud-subtle);
+    background: var(--hud-subtle);
+}
+
+#status-panel.status-starting #status-dot {
+    color: var(--hud-yellow);
+    background: var(--hud-yellow);
+}
+
+#status-panel.status-listening #status-dot {
+    color: var(--hud-cyan);
+    background: var(--hud-cyan);
+}
+
+#status-panel.status-error #status-dot {
+    color: var(--hud-red);
+    background: var(--hud-red);
+}
+
+#text-panel {
+    padding: 14px 26px;
+    height: 110px; /* 足夠容納兩行大字的高度 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 垂直置中，文字變多會向上下推 */
+    overflow: hidden;
+}
+
+#text {
+    color: var(--hud-text);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.03em;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(83, 249, 255, 0.16), 0 2px 16px rgba(0, 0, 0, 0.45);
+    word-break: break-all;
+    max-height: 2.8em; /* 限制最多顯示 2 行的高度 */
+    overflow: hidden;
+}
+
+#text.is-system-message {
+    color: #d5e7ff;
+}
+
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+#close-button:hover {
+    opacity: 1;
+    transform: scale(1.06);
+}
+
+#drag-overlay {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 260px;
+    padding: 10px 18px;
+    text-align: center;
+    color: #07101f;
+    background: linear-gradient(135deg, rgba(255, 228, 92, 0.96), rgba(83, 249, 255, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 32px rgba(255, 228, 92, 0.35);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    -webkit-app-region: drag;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+}
+
+.alt-active #drag-overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 720px) {
+    #subtitle-container {
+        width: calc(100vw - 20px);
+        margin-top: 6px;
+        padding: 8px 10px 16px;
+    }
+
+    #text-panel {
+        padding: 14px 16px;
+    }
+
+    #text {
+        font-size: 24px;
+    }
+}

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字幕設定 - 桌面字幕</title>
+    <style>
+        :root {
+            --bg: #070b14;
+            --panel: rgba(10, 18, 34, 0.92);
+            --panel-2: rgba(12, 25, 48, 0.88);
+            --cyan: #57f7ff;
+            --yellow: #ffe761;
+            --red: #ff5f88;
+            --text: #ecf8ff;
+            --muted: #88a0b8;
+            --border: rgba(87, 247, 255, 0.3);
+            --shadow: 0 0 30px rgba(87, 247, 255, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(87, 247, 255, 0.12), transparent 34%),
+                radial-gradient(circle at top right, rgba(255, 231, 97, 0.12), transparent 28%),
+                linear-gradient(180deg, #060911 0%, #0c1323 100%);
+            padding: 20px;
+        }
+
+        .shell {
+            position: relative;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 24px;
+            background: linear-gradient(180deg, rgba(14, 23, 42, 0.95), rgba(9, 16, 30, 0.94));
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+        }
+
+        .shell::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+            clip-path: inherit;
+        }
+
+        .eyebrow {
+            color: var(--yellow);
+            font-size: 11px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 0.06em;
+        }
+
+        .subline {
+            margin-top: 10px;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .divider {
+            height: 1px;
+            margin: 22px 0;
+            background: linear-gradient(90deg, var(--cyan), transparent 75%);
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            color: var(--yellow);
+            text-transform: uppercase;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 14px;
+            background: var(--panel-2);
+            border: 1px solid rgba(87, 247, 255, 0.24);
+            color: var(--text);
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s ease;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 52px;
+            padding: 4px;
+            background: var(--panel-2);
+            border: 1px solid rgba(87, 247, 255, 0.24);
+            cursor: pointer;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+        }
+
+        input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(87, 247, 255, 0.14);
+        }
+
+        .hint {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .preview {
+            margin: 22px 0 18px;
+            padding: 16px;
+            background: rgba(5, 10, 20, 0.72);
+            border: 1px solid rgba(255, 231, 97, 0.22);
+            box-shadow: inset 0 0 22px rgba(87, 247, 255, 0.05);
+        }
+
+        .preview-title {
+            font-size: 11px;
+            color: var(--cyan);
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .preview-text {
+            color: #eff9ff;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            cursor: pointer;
+            color: #07111d;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--yellow), var(--cyan));
+            box-shadow: 0 0 22px rgba(255, 231, 97, 0.2);
+            clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 28px rgba(87, 247, 255, 0.22);
+        }
+
+        .status {
+            margin-top: 14px;
+            min-height: 22px;
+            font-size: 13px;
+            color: var(--cyan);
+        }
+
+        .status[data-state="error"] {
+            color: var(--red);
+        }
+
+        /* 關閉按鈕樣式 */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            filter: drop-shadow(0 0 5px rgba(255, 95, 136, 0.4));
+        }
+
+        .close-btn:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 8px rgba(255, 95, 136, 0.8));
+        }
+
+        /* Alt 拖動模式樣式 */
+        body.alt-pressed .shell {
+            cursor: move;
+            -webkit-app-region: drag;
+            border-color: var(--yellow);
+            pointer-events: auto !important;
+        }
+
+        body.alt-pressed .shell * {
+            pointer-events: none !important;
+        }
+
+        body.alt-pressed .close-btn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <!-- 關閉按鈕 SVG -->
+        <div id="closeBtn" class="close-btn" title="關閉設定">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" fill="#ff5f88" fill-opacity="0.2"/>
+                <path d="M15 9L9 15M9 9L15 15" stroke="#ff5f88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="eyebrow">System Config</div>
+        <h1>字幕設定</h1>
+        <div class="subline">調整字幕顯示的字體、色彩與底板，所有變更都會即時同步到桌面字幕 HUD。</div>
+
+        <div class="divider"></div>
+
+        <div class="field">
+            <label for="stylePreset">風格預設 (Presets)</label>
+            <select id="stylePreset" style="width:100%; padding:14px; background:var(--panel-2); border:1px solid var(--border); color:var(--text); clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%); outline:none;">
+                <option value="custom">-- 自訂樣式 --</option>
+                <option value="cyberpunk">Cyberpunk (預設)</option>
+                <option value="classic">經典黑魂 (Classic Dark)</option>
+                <option value="light">極簡白晝 (Modern Light)</option>
+                <option value="anime">動漫實況 (Anime Style)</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="fontSize">字體大小</label>
+            <input type="number" id="fontSize" min="12" max="120" placeholder="例如 32">
+        </div>
+
+        <div class="field">
+            <label for="fontColor">文字顏色</label>
+            <input type="color" id="fontColor">
+        </div>
+
+        <div class="field">
+            <label>背景顏色與透明度</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="color" id="bgColorPicker" style="width: 60px; height: 52px; flex-shrink: 0;">
+                <div style="flex-grow: 1;">
+                    <input type="range" id="bgOpacity" min="0" max="100" value="72" style="width: 100%; height: 20px; cursor: pointer;">
+                    <div class="hint" style="margin-top: 2px;">透明度: <span id="opacityValue">72</span>%</div>
+                </div>
+            </div>
+            <input type="text" id="bgColor" style="margin-top: 10px; font-size: 12px; padding: 8px;" placeholder="rgba(6, 14, 32, 0.72)">
+        </div>
+
+        <div class="field">
+            <label for="fontFamily">字型家族</label>
+            <input type="text" id="fontFamily" placeholder="Microsoft JhengHei">
+            <div class="hint">建議填入系統已安裝字型，例如 `Microsoft JhengHei`、`Noto Sans TC`。</div>
+        </div>
+
+        <div class="preview">
+            <div class="preview-title">Preview</div>
+            <div class="preview-text">夜城上線中，字幕系統待命。</div>
+        </div>
+
+        <button id="saveBtn">儲存設定</button>
+        <div id="statusText" class="status" data-state="ok"></div>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "name": "desktop-subtitles",
+  "version": "0.0.1",
+  "description": "A premium desktop subtitles tool with real-time speech recognition.",
+  "main": "main.js",
+  "scripts": {
+    "start": "set \"ELECTRON_RUN_AS_NODE=\" && electron .",
+    "rebuild": "npx @electron/rebuild -f -w uiohook-napi",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.subtitle.desktop",
+    "productName": "桌面字幕",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "pic/logo.ico",
+      "target": [
+        "portable"
+      ]
+    },
+    "extraResources": [
+      {
+        "from": "models",
+        "to": "models",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "uiohook-napi": "^1.5.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.6.0",
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3"
+  }
+}

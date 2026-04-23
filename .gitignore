@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+.env
+.electron-store/
+settings.json
+package-lock.json
+models/
+ffmpeg.exe
+ffprobe.exe
+/C#_project/.vs
+/C#_project/Properties
+/C#_project/obj
